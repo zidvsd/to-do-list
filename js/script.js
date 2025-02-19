@@ -56,26 +56,45 @@ const delTaskFromStorage = (taskName) => {
 };
 
 const deleteAll = () => {
-  deleteAllBtn.addEventListener("click", () => {});
-};
-const selectAll = () => {
-  const checkBox = document.querySelectorAll(".checkbox");
-  checkedTasks = [];
-  checkBox.forEach((checkbox) => {
-    checkbox.checked = event.target.checked;
+  deleteAllBtn.addEventListener("click", () => {
+    // Attach ONCE outside createTaskElement
+    checkedTasks.forEach(({ taskDiv, dateText }) => {
+      if (taskDiv) {
+        const taskName = taskDiv.querySelector("h1")?.textContent?.trim();
+        if (taskName) {
+          delTaskFromStorage(taskName);
+        }
+        taskDiv.remove();
+      }
+      if (dateText) {
+        dateText.remove();
+      }
+    });
 
-    if (checkbox.checked) {
-      const taskDiv = checkbox.closest("div");
-      const dateText = checkbox.closest(".date-text");
-      checkedTasks.push({ taskDiv, dateText });
-    }
+    checkedTasks = [];
+  });
+};
+
+const selectAll = () => {
+  selectAllBtn.addEventListener("change", (event) => {
+    //Attach event listener only once
+    const checkBox = document.querySelectorAll(".checkbox");
+    checkedTasks = [];
+    checkBox.forEach((checkbox) => {
+      checkbox.checked = event.target.checked;
+
+      if (checkbox.checked) {
+        const taskDiv = checkbox.closest(".flex");
+        const dateText = taskDiv ? taskDiv.nextElementSibling : null;
+
+        checkedTasks.push({ taskDiv, dateText });
+      }
+    });
   });
 };
 
 const createTaskElement = (taskName, taskDate) => {
-  console.log("hello");
-
-  // Create a new div element
+  // Create a new div element  (Moved to the TOP)
   const newTaskDiv = document.createElement("div");
   newTaskDiv.classList.add(
     "flex",
@@ -92,17 +111,17 @@ const createTaskElement = (taskName, taskDate) => {
     "max-w-md"
   );
 
-  // Set inner HTML for the new div
+  // Set inner HTML for the new div (AFTER declaration)
   newTaskDiv.innerHTML = `
-        <input id="select-task" type="checkbox" class="checkbox" />
-        <h1 class="text-black text-center">${capitalize(taskName)}</h1>
-        <button  class="btn btn-square btn-outline delete-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" stroke="currentColor"
-                class="bi bi-trash-fill hover:fill-current hover:stroke-current" viewBox="0 0 16 16">
-                <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0" />
-            </svg>
-        </button>
-    `;
+      <input id="select-task" type="checkbox" class="checkbox" />
+      <h1 class="text-black text-center">${capitalize(taskName)}</h1>
+      <button  class="btn btn-square btn-outline delete-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" stroke="currentColor"
+              class="bi bi-trash-fill hover:fill-current hover:stroke-current" viewBox="0 0 16 16">
+              <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0" />
+          </svg>
+      </button>
+  `;
 
   const dateText = document.createElement("p");
   dateText.textContent = taskDate;
@@ -112,36 +131,33 @@ const createTaskElement = (taskName, taskDate) => {
   mainContainer.appendChild(newTaskDiv);
   mainContainer.appendChild(dateText);
 
-  const checkBox = newTaskDiv.querySelector(".checkbox");
-  const deleteBtn = newTaskDiv.querySelector(".delete-btn");
+  const checkBox = newTaskDiv.querySelector(".checkbox"); // Now newTaskDiv is defined
+  const deleteBtn = newTaskDiv.querySelector(".delete-btn"); // Now newTaskDiv is defined
 
   checkBox.addEventListener("change", (event) => {
     if (event.target.checked) {
       checkedTasks.push({ taskDiv: newTaskDiv, dateText });
 
-      // Move delete button listener inside the checkbox event
       deleteBtn.addEventListener("click", () => {
-        checkedTasks.forEach((task) => {
-          const taskName = task.taskDiv.querySelector("h1").textContent.trim();
-          // Remove from localStorage
-          delTaskFromStorage(taskName);
-          // Remove from UI
-          task.taskDiv.remove();
-          task.dateText.remove();
-        });
-        // Clear the checkedTasks array
-        checkedTasks = [];
+        const taskName = newTaskDiv.querySelector("h1").textContent.trim();
+        delTaskFromStorage(taskName);
+        newTaskDiv.remove();
+        dateText.remove();
+        checkedTasks = checkedTasks.filter(
+          (task) => task.taskDiv !== newTaskDiv
+        );
       });
     } else {
       checkedTasks = checkedTasks.filter((task) => task.taskDiv !== newTaskDiv);
     }
   });
-  selectAllBtn.addEventListener("change", (event) => {
-    if (event.target.checked) {
-      selectAll();
-    }
-  });
 };
+selectAllBtn.addEventListener("change", (event) => {
+  if (event.target.checked) {
+    selectAll();
+    deleteAll();
+  }
+});
 
 addTaskBtn.addEventListener("click", () => {
   const addTaskDiv = document.createElement("div");
@@ -204,4 +220,8 @@ addTaskBtn.addEventListener("click", () => {
   });
 });
 
-window.onload = loadTasks;
+window.onload = () => {
+  loadTasks();
+  deleteAll(); // Call deleteAll to attach the event listener
+  selectAll();
+};
