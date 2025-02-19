@@ -57,41 +57,38 @@ const delTaskFromStorage = (taskName) => {
 
 const deleteAll = () => {
   deleteAllBtn.addEventListener("click", () => {
-    // Attach ONCE outside createTaskElement
-    checkedTasks.forEach(({ taskDiv, dateText }) => {
-      if (taskDiv) {
-        const taskName = taskDiv.querySelector("h1")?.textContent?.trim();
-        if (taskName) {
-          delTaskFromStorage(taskName);
-        }
-        taskDiv.remove();
-      }
-      if (dateText) {
-        dateText.remove();
-      }
+    checkedTasks.forEach((task) => {
+      // Iterate over task *data*
+      delTaskFromStorage(task.name); // Use task.name
+      task.div.remove(); // Remove the div from the DOM
+      task.dateText.remove();
+      tasks = tasks.filter((t) => t.name !== task.name); // Remove from tasks array as well
     });
-
     checkedTasks = [];
+
+    selectAllBtn.checked = false;
   });
 };
 
 const selectAll = () => {
   selectAllBtn.addEventListener("change", (event) => {
-    //Attach event listener only once
+    checkedTasks = []; // Clear checked tasks first
     const checkBox = document.querySelectorAll(".checkbox");
-    checkedTasks = [];
+
     checkBox.forEach((checkbox) => {
       checkbox.checked = event.target.checked;
-
       if (checkbox.checked) {
         const taskDiv = checkbox.closest(".flex");
-        const dateText = taskDiv ? taskDiv.nextElementSibling : null;
-
-        checkedTasks.push({ taskDiv, dateText });
+        const task = tasks.find((t) => t.div === taskDiv); // Find task *data*
+        if (task) {
+          checkedTasks.push(task); // Add task *data*
+        }
       }
     });
   });
 };
+
+let tasks = [];
 
 const createTaskElement = (taskName, taskDate) => {
   // Create a new div element  (Moved to the TOP)
@@ -134,30 +131,29 @@ const createTaskElement = (taskName, taskDate) => {
   const checkBox = newTaskDiv.querySelector(".checkbox"); // Now newTaskDiv is defined
   const deleteBtn = newTaskDiv.querySelector(".delete-btn"); // Now newTaskDiv is defined
 
+  const taskData = {
+    name: taskName,
+    date: taskDate,
+    div: newTaskDiv,
+    dateText: dateText,
+  }; // Store task data
+  tasks.push(taskData); // Add task *data* to the tasks array
+
   checkBox.addEventListener("change", (event) => {
     if (event.target.checked) {
-      checkedTasks.push({ taskDiv: newTaskDiv, dateText });
-
-      deleteBtn.addEventListener("click", () => {
-        const taskName = newTaskDiv.querySelector("h1").textContent.trim();
-        delTaskFromStorage(taskName);
-        newTaskDiv.remove();
-        dateText.remove();
-        checkedTasks = checkedTasks.filter(
-          (task) => task.taskDiv !== newTaskDiv
-        );
-      });
+      checkedTasks.push(taskData); // Add task *data* to checkedTasks
     } else {
-      checkedTasks = checkedTasks.filter((task) => task.taskDiv !== newTaskDiv);
+      checkedTasks = checkedTasks.filter((task) => task !== taskData); // Remove task *data*
     }
   });
+  deleteBtn.addEventListener("click", () => {
+    delTaskFromStorage(taskName);
+    newTaskDiv.remove();
+    dateText.remove();
+    tasks = tasks.filter((task) => task.name !== taskName); //Remove from tasks array as well
+    checkedTasks = checkedTasks.filter((task) => task.name !== taskName); //Remove from checkedTasks array as well
+  });
 };
-selectAllBtn.addEventListener("change", (event) => {
-  if (event.target.checked) {
-    selectAll();
-    deleteAll();
-  }
-});
 
 addTaskBtn.addEventListener("click", () => {
   const addTaskDiv = document.createElement("div");
