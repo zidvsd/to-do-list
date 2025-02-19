@@ -91,27 +91,30 @@
       <div
         class="search-container flex flex-col items-center justify-center mt-4"
       >
-        <label
-          class="input input-bordered flex items-center gap-2 rounded-md max-w-md w-full"
-        >
-          <input
-            type="text"
-            class="grow placeholder:text-black"
-            placeholder="Search"
-          />
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 16 16"
-            fill="currentColor"
-            class="h-4 w-4 opacity-70"
+        <form autocomplete="off" class="max-w-md w-full">
+          <label
+            class="input input-bordered flex items-center gap-2 rounded-md max-w-md w-full"
           >
-            <path
-              fill-rule="evenodd"
-              d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-              clip-rule="evenodd"
+            <input
+              type="text"
+              class="grow placeholder:text-black"
+              placeholder="Search"
+              id="search-input"
             />
-          </svg>
-        </label>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              class="h-4 w-4 opacity-70"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </label>
+        </form>
       </div>
 
       <!-- main -->
@@ -150,13 +153,33 @@
             </svg>
           </button>
         </div>
+
+        <!-- theme changer -->
+        <!-- <label class="form-control w-full max-w-xs">
+        <div class="label">
+          <span class="label-text">Pick the best fantasy franchise</span>
+          <span class="label-text-alt">Alt label</span>
+        </div>
+        <select class="select select-bordered">
+          <option disabled selected>Pick one</option>
+          <option>Star Wars</option>
+          <option>Harry Potter</option>
+          <option>Lord of the Rings</option>
+          <option>Planet of the Apes</option>
+          <option>Star Trek</option>
+        </select>
+        <div class="label">
+          <span class="label-text-alt">Alt label</span>
+          <span class="label-text-alt">Alt label</span>
+        </div>
+      </label> -->
       </main>
     </div>
 
     <!-- pop up when user enters no value -->
     <div
       id="popup-validation"
-      class="absolute hidden p-6 bg-black text-yellowCustom text-white text-center border-black text-nowrap top-1/2 left-1/2 font-bold text-xl border -translate-x-1/2 -translate-y-1/2"
+      class="absolute hidden p-6 text-center text-nowrap top-1/2 left-1/2 font-bold text-xl -translate-x-1/2 -translate-y-1/2"
     >
       <h1>Please enter a keyword</h1>
     </div>

@@ -5,6 +5,7 @@ const popupValidation = document.getElementById("popup-validation");
 const deleteAllBtn = document.getElementById("delete-all");
 const selectAllBtn = document.getElementById("select-all");
 let checkedTasks = [];
+const searchInput = document.getElementById("search-input");
 const capitalize = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
@@ -69,22 +70,25 @@ const deleteAll = () => {
     selectAllBtn.checked = false;
   });
 };
-
 const selectAll = () => {
   selectAllBtn.addEventListener("change", (event) => {
-    checkedTasks = []; // Clear checked tasks first
     const checkBox = document.querySelectorAll(".checkbox");
 
+    checkedTasks = []; // Reset checked tasks
+
     checkBox.forEach((checkbox) => {
-      checkbox.checked = event.target.checked;
-      if (checkbox.checked) {
-        const taskDiv = checkbox.closest(".flex");
-        const task = tasks.find((t) => t.div === taskDiv); // Find task *data*
-        if (task) {
-          checkedTasks.push(task); // Add task *data*
-        }
+      checkbox.checked = event.target.checked; // Check or uncheck all tasks
+
+      // Find the corresponding task
+      const taskDiv = checkbox.closest(".flex");
+      const task = tasks.find((t) => t.div === taskDiv);
+
+      if (event.target.checked && task) {
+        checkedTasks.push(task); // Add to checkedTasks if selected
       }
     });
+
+    updateCheckedCount(); // Ensure it updates after checking/unchecking
   });
 };
 
@@ -112,12 +116,17 @@ const createTaskElement = (taskName, taskDate) => {
   newTaskDiv.innerHTML = `
       <input id="select-task" type="checkbox" class="checkbox" />
       <h1 class="text-black text-center">${capitalize(taskName)}</h1>
-      <button  class="btn btn-square btn-outline delete-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" stroke="currentColor"
-              class="bi bi-trash-fill hover:fill-current hover:stroke-current" viewBox="0 0 16 16">
-              <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0" />
-          </svg>
-      </button>
+      <div class="flex flex-row gap-x-4">
+        <button  class="edit-btn hover:opacity-50 transition duration-200">
+          <img src='assets/icons/edit_24dp_E8EAED_FILL0_wght400_GRAD0_opsz24.svg'
+        </button>
+        <button  class="btn btn-square btn-outline delete-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" stroke="currentColor"
+                class="bi bi-trash-fill hover:fill-current hover:stroke-current" viewBox="0 0 16 16">
+                <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0" />
+            </svg>
+        </button>
+    </div>      
   `;
 
   const dateText = document.createElement("p");
@@ -128,15 +137,26 @@ const createTaskElement = (taskName, taskDate) => {
   mainContainer.appendChild(newTaskDiv);
   mainContainer.appendChild(dateText);
 
-  const checkBox = newTaskDiv.querySelector(".checkbox"); // Now newTaskDiv is defined
-  const deleteBtn = newTaskDiv.querySelector(".delete-btn"); // Now newTaskDiv is defined
+  const checkBox = newTaskDiv.querySelector(".checkbox");
+  const deleteBtn = newTaskDiv.querySelector(".delete-btn");
+  const editBtn = newTaskDiv.querySelector(".edit-btn");
+  const h1 = newTaskDiv.querySelector("h1");
 
   const taskData = {
     name: taskName,
     date: taskDate,
     div: newTaskDiv,
     dateText: dateText,
+    h1: h1,
   }; // Store task data
+  editBtn.addEventListener("click", () => {
+    h1.contentEditable = true;
+    h1.focus();
+    h1.value = h1.addEventListener("blur", () => {
+      h1.contentEditable = false;
+      capitalize(h1.value);
+    });
+  });
   tasks.push(taskData); // Add task *data* to the tasks array
 
   checkBox.addEventListener("change", (event) => {
@@ -145,14 +165,27 @@ const createTaskElement = (taskName, taskDate) => {
     } else {
       checkedTasks = checkedTasks.filter((task) => task !== taskData); // Remove task *data*
     }
+    updateCheckedCount();
   });
   deleteBtn.addEventListener("click", () => {
+    // ✅ Check if the task is actually checked
+    if (!checkBox.checked) return;
+
+    // ✅ Remove from localStorage
     delTaskFromStorage(taskName);
+
+    // ✅ Remove from UI
     newTaskDiv.remove();
     dateText.remove();
-    tasks = tasks.filter((task) => task.name !== taskName); //Remove from tasks array as well
-    checkedTasks = checkedTasks.filter((task) => task.name !== taskName); //Remove from checkedTasks array as well
+
+    // ✅ Remove from `tasks` array
+    tasks = tasks.filter((task) => task.name !== taskName);
+
+    // ✅ Remove from `checkedTasks`
+    checkedTasks = checkedTasks.filter((task) => task.name !== taskName);
   });
+
+  searchFunction();
 };
 
 addTaskBtn.addEventListener("click", () => {
@@ -190,6 +223,8 @@ addTaskBtn.addEventListener("click", () => {
 
   const toDisplay = () => {
     popupValidation.classList.remove("hidden");
+    popupValidation.style.backgroundColor = `${bodyTheme}`;
+    popupValidation.style.color = `${bodyTheme}`;
     document.body.addEventListener("click", () => {
       popupValidation.classList.add("hidden");
     });
@@ -220,4 +255,31 @@ window.onload = () => {
   loadTasks();
   deleteAll(); // Call deleteAll to attach the event listener
   selectAll();
+  searchFunction();
+  updateTaskCount();
+  updateCheckedCount();
+};
+
+const searchFunction = () => {
+  searchInput.addEventListener("input", () => {
+    const searchValue = searchInput.value.toLowerCase();
+    tasks.forEach((task) => {
+      const isMatch = task.name.toLowerCase().includes(searchValue);
+      task.div.style.display = isMatch ? "flex" : "none";
+      task.dateText.style.display = isMatch ? "block" : "none";
+    });
+  });
+};
+
+//
+const updateTaskCount = () => {
+  const taskCount = tasks.length;
+  console.log(`Total Tasks: ${tasks.length}`);
+};
+const updateCheckedCount = () => {
+  const taskCount = tasks.length;
+  const checkedTaskCount = checkedTasks.length;
+
+  // Check only if ALL tasks are checked
+  selectAllBtn.checked = taskCount > 0 && checkedTaskCount === taskCount;
 };
