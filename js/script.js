@@ -4,6 +4,8 @@ const mainContainer = document.getElementById("main");
 const popupValidation = document.getElementById("popup-validation");
 const deleteAllBtn = document.getElementById("delete-all");
 const selectAllBtn = document.getElementById("select-all");
+const bodyTheme = document.body.className; // Get the applied theme class
+let tasks = [];
 let checkedTasks = [];
 const searchInput = document.getElementById("search-input");
 const capitalize = (str) => {
@@ -92,8 +94,6 @@ const selectAll = () => {
   });
 };
 
-let tasks = [];
-
 const createTaskElement = (taskName, taskDate) => {
   // Create a new div element  (Moved to the TOP)
   const newTaskDiv = document.createElement("div");
@@ -101,7 +101,7 @@ const createTaskElement = (taskName, taskDate) => {
     "flex",
     "flex-row",
     "justify-between",
-    "items-center",
+    "items-start",
     "mt-4",
     "p-4",
     "border",
@@ -115,7 +115,7 @@ const createTaskElement = (taskName, taskDate) => {
   // Set inner HTML for the new div (AFTER declaration)
   newTaskDiv.innerHTML = `
       <input id="select-task" type="checkbox" class="checkbox" />
-      <h1 class="text-black text-center">${capitalize(taskName)}</h1>
+      <h1 tabindex='0' class="text-black text-center">${capitalize(taskName)}</h1>
       <div class="flex flex-row gap-x-4">
         <button  class="edit-btn hover:opacity-50 transition duration-200">
           <img src='assets/icons/edit_24dp_E8EAED_FILL0_wght400_GRAD0_opsz24.svg'
@@ -152,9 +152,27 @@ const createTaskElement = (taskName, taskDate) => {
   editBtn.addEventListener("click", () => {
     h1.contentEditable = true;
     h1.focus();
-    h1.value = h1.addEventListener("blur", () => {
+    h1.classList.add("outline", "outline-black");
+    h1.addEventListener("blur", () => {
       h1.contentEditable = false;
-      capitalize(h1.value);
+      h1.style.outline = "none";
+      h1.innerText = capitalize(h1.innerText.trim());
+    });
+    const range = document.createRange();
+    const selection = window.getSelection();
+    range.selectNodeContents(h1);
+    range.collapse(false); // Move cursor to the end
+    selection.removeAllRanges();
+    selection.addRange(range);
+    h1.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        h1.innerText = capitalize(h1.innerText.trim());
+        event.preventDefault();
+
+        h1.innerText === ""
+          ? (toDisplay(), h1.focus()) // Runs both `toDisplay()` and `h1.focus()`
+          : (toHide(), h1.blur()); // Runs both `toHide()` and `h1.blur()`
+      }
     });
   });
   tasks.push(taskData); // Add task *data* to the tasks array
@@ -192,7 +210,6 @@ addTaskBtn.addEventListener("click", () => {
   const addTaskDiv = document.createElement("div");
 
   // Get body theme classes
-  const bodyTheme = document.body.className; // Get the applied theme class
 
   // Apply the same theme class to the new div
   addTaskDiv.className = `p-4 rounded-md w-full max-w-xs ${bodyTheme}`;
@@ -217,19 +234,6 @@ addTaskBtn.addEventListener("click", () => {
   // Append the div to the container
   mainContainer.appendChild(addTaskDiv);
 
-  const toHide = () => {
-    popupValidation.classList.add("hidden");
-  };
-
-  const toDisplay = () => {
-    popupValidation.classList.remove("hidden");
-    popupValidation.style.backgroundColor = `${bodyTheme}`;
-    popupValidation.style.color = `${bodyTheme}`;
-    document.body.addEventListener("click", () => {
-      popupValidation.classList.add("hidden");
-    });
-  };
-
   inputField.addEventListener("keyup", (event) => {
     if (event.key === "Enter") {
       if (inputField.value === "") {
@@ -250,13 +254,24 @@ addTaskBtn.addEventListener("click", () => {
     }
   });
 });
+const toHide = () => {
+  popupValidation.classList.add("hidden");
+};
+
+const toDisplay = () => {
+  popupValidation.classList.remove("hidden");
+  popupValidation.style.backgroundColor = `${bodyTheme}`;
+  popupValidation.style.color = `${bodyTheme}`;
+  document.body.addEventListener("click", () => {
+    popupValidation.classList.add("hidden");
+  });
+};
 
 window.onload = () => {
   loadTasks();
   deleteAll(); // Call deleteAll to attach the event listener
   selectAll();
   searchFunction();
-  updateTaskCount();
   updateCheckedCount();
 };
 
@@ -271,11 +286,6 @@ const searchFunction = () => {
   });
 };
 
-//
-const updateTaskCount = () => {
-  const taskCount = tasks.length;
-  console.log(`Total Tasks: ${tasks.length}`);
-};
 const updateCheckedCount = () => {
   const taskCount = tasks.length;
   const checkedTaskCount = checkedTasks.length;

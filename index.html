@@ -1,161 +1,126 @@
 <!doctype html>
 <html data-theme="cyberpunk">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="icon"
-      href="/assets/icons/DALL·E 2025-02-17 20.36.59 - A yellow notes icon, with a clean, minimalistic design, featuring a simple notepad with a folded top corner and lines representing text inside. The ic.webp"
-    />
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              yellowCustom: "#fff248",
-            },
-            fontFamily: {
-              poppins: ["Poppins", "sans-serif"],
-              inter: ["Inter", "sans-serif"],
-            },
-            screens: {
-              tablet: "640px",
-              laptop: "1024px",
-              desktop: "1280px",
-            },
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon"
+    href="/assets/icons/DALL·E 2025-02-17 20.36.59 - A yellow notes icon, with a clean, minimalistic design, featuring a simple notepad with a folded top corner and lines representing text inside. The ic.webp" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            yellowCustom: "#fff248",
+          },
+          fontFamily: {
+            poppins: ["Poppins", "sans-serif"],
+            inter: ["Inter", "sans-serif"],
+          },
+          screens: {
+            tablet: "640px",
+            laptop: "1024px",
+            desktop: "1280px",
           },
         },
-        daisyui: {
-          themes: [
-            "light",
-            "dark",
-            "cupcake",
-            "bumblebee",
-            "emerald",
-            "corporate",
-            "synthwave",
-            "retro",
-            "cyberpunk",
-            "valentine",
-            "halloween",
-            "garden",
-            "forest",
-            "aqua",
-            "lofi",
-            "pastel",
-            "fantasy",
-            "wireframe",
-            "black",
-            "luxury",
-            "dracula",
-            "cmyk",
-            "autumn",
-            "business",
-            "acid",
-            "lemonade",
-            "night",
-            "coffee",
-            "winter",
-            "dim",
-            "nord",
-            "sunset",
-          ], // Corrected syntax
-        },
-      };
-    </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="/css/styles.css" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css"
-      rel="stylesheet"
-      type="text/css"
-    />
-  </head>
+      },
+      daisyui: {
+        themes: [
+          "light",
+          "dark",
+          "cupcake",
+          "bumblebee",
+          "emerald",
+          "corporate",
+          "synthwave",
+          "retro",
+          "cyberpunk",
+          "valentine",
+          "halloween",
+          "garden",
+          "forest",
+          "aqua",
+          "lofi",
+          "pastel",
+          "fantasy",
+          "wireframe",
+          "black",
+          "luxury",
+          "dracula",
+          "cmyk",
+          "autumn",
+          "business",
+          "acid",
+          "lemonade",
+          "night",
+          "coffee",
+          "winter",
+          "dim",
+          "nord",
+          "sunset",
+        ], // Corrected syntax
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
+</head>
 
-  <body class="relative">
-    <div
-      class="p-4 container mx-auto h-screen flex flex-col w-full max-w-desktop"
-    >
-      <h1 class="font-bold font-poppins text-2xl text-center">
-        To Do List App
-      </h1>
+<body class="relative">
+  <div class="p-4 container mx-auto h-screen flex flex-col w-full max-w-desktop">
+    <h1 class="font-bold font-poppins text-2xl text-center">
+      To Do List App
+    </h1>
 
-      <!-- search container -->
-      <div
-        class="search-container flex flex-col items-center justify-center mt-4"
-      >
-        <form autocomplete="off" class="max-w-md w-full">
-          <label
-            class="input input-bordered flex items-center gap-2 rounded-md max-w-md w-full"
-          >
-            <input
-              type="text"
-              class="grow placeholder:text-black"
-              placeholder="Search"
-              id="search-input"
-            />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              class="h-4 w-4 opacity-70"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </label>
-        </form>
+    <!-- search container -->
+    <div class="search-container flex flex-col items-center justify-center mt-4">
+      <form autocomplete="off" class="max-w-md w-full">
+        <label class="input input-bordered flex items-center gap-2 rounded-md max-w-md w-full">
+          <input type="text" class="grow placeholder:text-black" placeholder="Search" id="search-input" />
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="h-4 w-4 opacity-70">
+            <path fill-rule="evenodd"
+              d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+              clip-rule="evenodd" />
+          </svg>
+        </label>
+      </form>
+    </div>
+
+    <!-- main -->
+    <main class="flex flex-col items-center mt-6" id="main">
+      <!-- button to add new  -->
+      <div class="w-full flex items-center justify-center">
+        <button class="btn btn-wide mt-4 max-w-md w-full" id="add-task">
+          <img src="/assets/icons/add_32dp_UNDEFINED_FILL0_wght400_GRAD0_opsz40.svg" alt="" />
+          <p>New To-Do List</p>
+        </button>
       </div>
 
-      <!-- main -->
-      <main class="flex flex-col items-center mt-6" id="main">
-        <!-- button to add new  -->
-        <div class="w-full flex items-center justify-center">
-          <button class="btn btn-wide mt-4 max-w-md w-full" id="add-task">
-            <img
-              src="/assets/icons/add_32dp_UNDEFINED_FILL0_wght400_GRAD0_opsz40.svg"
-              alt=""
-            />
-            <p>New To-Do List</p>
-          </button>
+      <div class="flex w-full items-center mt-4 justify-between max-w-md">
+        <!-- select all button -->
+        <div class="flex flex-row gap-x-2 items-center">
+          <input type="checkbox" id="select-all" class="checkbox" />
+          <label for="select-all">Select All</label>
         </div>
+        <!-- delete button -->
+        <button class="btn btn-square btn-outline" id="delete-all">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" stroke="currentColor"
+            class="bi bi-trash-fill hover:fill-current hover:stroke-current" viewBox="0 0 16 16">
+            <path
+              d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0" />
+          </svg>
+        </button>
+      </div>
 
-        <div class="flex w-full items-center mt-4 justify-between max-w-md">
-          <!-- select all button -->
-          <div class="flex flex-row gap-x-2 items-center">
-            <input type="checkbox" id="select-all" class="checkbox" />
-            <label for="select-all">Select All</label>
-          </div>
-          <!-- delete button -->
-          <button class="btn btn-square btn-outline" id="delete-all">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              fill="currentColor"
-              stroke="currentColor"
-              class="bi bi-trash-fill hover:fill-current hover:stroke-current"
-              viewBox="0 0 16 16"
-            >
-              <path
-                d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"
-              />
-            </svg>
-          </button>
-        </div>
-
-        <!-- theme changer -->
-        <!-- <label class="form-control w-full max-w-xs">
+      <!-- theme changer -->
+      <!-- <label class="form-control w-full max-w-xs">
         <div class="label">
           <span class="label-text">Pick the best fantasy franchise</span>
           <span class="label-text-alt">Alt label</span>
@@ -173,17 +138,16 @@
           <span class="label-text-alt">Alt label</span>
         </div>
       </label> -->
-      </main>
-    </div>
+    </main>
+  </div>
 
-    <!-- pop up when user enters no value -->
-    <div
-      id="popup-validation"
-      class="absolute hidden p-6 text-center text-nowrap top-1/2 left-1/2 font-bold text-xl -translate-x-1/2 -translate-y-1/2"
-    >
-      <h1>Please enter a keyword</h1>
-    </div>
+  <!-- pop up when user enters no value -->
+  <div id="popup-validation"
+    class="absolute hidden p-6 text-center text-red-500 text-nowrap top-1/2 left-1/2 font-bold text-xl -translate-x-1/2 -translate-y-1/2">
+    <h1>Please enter a keyword</h1>
+  </div>
 
-    <script src="/js/script.js"></script>
-  </body>
-</html>
+  <script src="/js/script.js"></script>
+</body>
+
+</html>a
