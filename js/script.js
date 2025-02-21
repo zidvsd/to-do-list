@@ -1,6 +1,6 @@
 const addTaskBtn = document.getElementById("add-task");
 const displayInput = document.getElementById("add-task-input");
-const mainContainer = document.getElementById("main");
+const newTaskDivContainer = document.getElementById("new-task-container");
 const popupValidation = document.getElementById("popup-validation");
 const deleteAllBtn = document.getElementById("delete-all");
 const selectAllBtn = document.getElementById("select-all");
@@ -105,24 +105,25 @@ const createTaskElement = (taskName, taskDate) => {
     "mt-4",
     "p-4",
     "border",
-    "border-black",
+    "border-accent",
     "w-full",
     "h-auto",
-    "text-black",
     "max-w-md"
   );
 
   // Set inner HTML for the new div (AFTER declaration)
   newTaskDiv.innerHTML = `
-      <input id="select-task" type="checkbox" class="checkbox" />
-      <h1 tabindex='0' class="text-black text-center">${capitalize(taskName)}</h1>
-      <div class="flex flex-row gap-x-4">
-        <button  class="edit-btn hover:opacity-50 transition duration-200">
-          <img src='assets/icons/edit_24dp_E8EAED_FILL0_wght400_GRAD0_opsz24.svg'
+      <input id="select-task" type="checkbox" class="checkbox checkbox-accent " />
+      <h1 tabindex="0" class="font-inter font-regular break-words text-center text-base-400 flex-1 min-w-0 px-4 mx-4 select-none" >${capitalize(taskName)}</h1>
+      <div class="flex flex-row gap-x-4 items-baseline">
+        <button  class="edit-btn hover:opacity-50 w-full transition duration-200">
+        <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px" fill="currentColor" class="text-accent" stroke="currentColor"  stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg>
         </button>
-        <button  class="btn btn-square btn-outline delete-btn">
+        <button  class="btn btn-square  delete-btn bg-accent shadow-outline"  >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" stroke="currentColor"
-                class="bi bi-trash-fill hover:fill-current hover:stroke-current" viewBox="0 0 16 16">
+                class="bi bi-trash-fill text-base-100 " viewBox="0 0 16 16">
                 <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0" />
             </svg>
         </button>
@@ -131,11 +132,12 @@ const createTaskElement = (taskName, taskDate) => {
 
   const dateText = document.createElement("p");
   dateText.textContent = taskDate;
-  dateText.className = "date-text font-bold w-full max-w-md text-left";
+  dateText.className =
+    "font-poppins text-accent date-text font-bold w-full max-w-md text-left";
 
   // Append the new div to the parent container
-  mainContainer.appendChild(newTaskDiv);
-  mainContainer.appendChild(dateText);
+  newTaskDivContainer.appendChild(newTaskDiv);
+  newTaskDivContainer.appendChild(dateText);
 
   const checkBox = newTaskDiv.querySelector(".checkbox");
   const deleteBtn = newTaskDiv.querySelector(".delete-btn");
@@ -148,34 +150,71 @@ const createTaskElement = (taskName, taskDate) => {
     div: newTaskDiv,
     dateText: dateText,
     h1: h1,
-  }; // Store task data
+  }; // store task data
+  tasks.push(taskData); // add task data to the tasks array
+
   editBtn.addEventListener("click", () => {
     h1.contentEditable = true;
     h1.focus();
-    h1.classList.add("outline", "outline-black");
-    h1.addEventListener("blur", () => {
-      h1.contentEditable = false;
-      h1.style.outline = "none";
-      h1.innerText = capitalize(h1.innerText.trim());
-    });
+    h1.style.outline = "none";
+    h1.classList.add("focus:ring-1", "focus:ring-base-content");
     const range = document.createRange();
     const selection = window.getSelection();
     range.selectNodeContents(h1);
-    range.collapse(false); // Move cursor to the end
+    range.collapse(false); // false means collapse to end
     selection.removeAllRanges();
     selection.addRange(range);
+    // When user clicks outside or presses Enter, save changes
+    const saveEditedTask = () => {
+      h1.contentEditable = false;
+
+      h1.innerText = capitalize(h1.innerText.trim());
+
+      // ✅ Get tasks from local storage, ensure it's an array
+      let storedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+      // ✅ Ensure `storedTasks` is an array before using `.findIndex()`
+      if (!Array.isArray(storedTasks)) {
+        console.error("Local storage `tasks` is not an array. Resetting.");
+        storedTasks = [];
+      }
+
+      // ✅ Find the index of the task
+      let taskIndex = storedTasks.findIndex(
+        (task) => task && task.name === taskName
+      );
+
+      if (taskIndex !== -1) {
+        storedTasks[taskIndex].name = h1.innerText; // Update task name
+        localStorage.setItem("tasks", JSON.stringify(storedTasks)); // Save back to localStorage
+      } else {
+        console.warn("Task not found in localStorage, skipping update.");
+      }
+
+      // ✅ Update task in `tasks` array
+      taskData.name = h1.innerText;
+    };
+
+    h1.addEventListener("blur", saveEditedTask);
+
     h1.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
-        h1.innerText = capitalize(h1.innerText.trim());
         event.preventDefault();
 
-        h1.innerText === ""
-          ? (toDisplay(), h1.focus()) // Runs both `toDisplay()` and `h1.focus()`
-          : (toHide(), h1.blur()); // Runs both `toHide()` and `h1.blur()`
+        const trimmedText = h1.innerText.trim();
+        if (trimmedText === "") {
+          toDisplay();
+          h1.focus;
+          return;
+        }
+        h1.innerText = capitalize(trimmedText);
+        h1.style.textAlign = "center";
+        toHide();
+        h1.blur();
+        saveEditedTask();
       }
     });
   });
-  tasks.push(taskData); // Add task *data* to the tasks array
 
   checkBox.addEventListener("change", (event) => {
     if (event.target.checked) {
@@ -208,19 +247,14 @@ const createTaskElement = (taskName, taskDate) => {
 
 addTaskBtn.addEventListener("click", () => {
   const addTaskDiv = document.createElement("div");
-
-  // Get body theme classes
-
-  // Apply the same theme class to the new div
   addTaskDiv.className = `p-4 rounded-md w-full max-w-xs ${bodyTheme}`;
 
   // Create an input field
   const inputField = document.createElement("input");
   inputField.type = "text";
   inputField.placeholder = "Type here";
-
   inputField.className =
-    "task-input mt-4 input input-bordered rounded-md input-md w-full max-w-xs text-black placeholder:text-black";
+    "task-input mt-4 input font-inter input-bordered rounded-md input-md w-full max-w-xs text-inherit placeholder:text-inherit";
 
   // Create a label
   const label = document.createElement("span");
@@ -231,8 +265,11 @@ addTaskBtn.addEventListener("click", () => {
   addTaskDiv.appendChild(inputField);
   addTaskDiv.appendChild(label);
 
-  // Append the div to the container
-  mainContainer.appendChild(addTaskDiv);
+  // Insert the div at the beginning of the container
+  newTaskDivContainer.insertBefore(addTaskDiv, newTaskDivContainer.firstChild);
+
+  // Focus the input field
+  inputField.focus();
 
   inputField.addEventListener("keyup", (event) => {
     if (event.key === "Enter") {
@@ -293,3 +330,59 @@ const updateCheckedCount = () => {
   // Check only if ALL tasks are checked
   selectAllBtn.checked = taskCount > 0 && checkedTaskCount === taskCount;
 };
+
+// theme changer
+const themes = [
+  "light",
+  "dark",
+  "cupcake",
+  "bumblebee",
+  "emerald",
+  "corporate",
+  "synthwave",
+  "retro",
+  "cyberpunk",
+  "valentine",
+  "halloween",
+  "garden",
+  "forest",
+  "aqua",
+  "lofi",
+  "pastel",
+  "fantasy",
+  "wireframe",
+  "black",
+  "luxury",
+  "dracula",
+  "cmyk",
+  "autumn",
+  "business",
+  "acid",
+  "lemonade",
+  "night",
+  "coffee",
+  "winter",
+  "dim",
+  "nord",
+  "sunset",
+];
+
+const select = document.getElementById("theme-select");
+const savedTheme = localStorage.getItem("selectedTheme");
+if (savedTheme) {
+  document.documentElement.setAttribute("data-theme", savedTheme);
+  select.value = savedTheme; // Set the dropdown to the saved theme
+}
+themes.forEach((theme) => {
+  const option = document.createElement("option");
+  option.value = theme;
+  option.textContent = theme.charAt(0).toUpperCase() + theme.slice(1); // Capitalize first letter
+  option.classList.add("text-accent");
+  select.appendChild(option);
+});
+
+select.addEventListener("change", () => {
+  const selectedTheme = select.value;
+  document.documentElement.setAttribute("data-theme", selectedTheme);
+  localStorage.setItem("selectedTheme", selectedTheme);
+});
